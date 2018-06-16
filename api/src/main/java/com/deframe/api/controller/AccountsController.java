@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,9 @@ import io.swagger.annotations.Api;
 /**
  * Handles requests for the application home page.
  */
+
 @Controller
+@CrossOrigin
 @Api(value = "Accounts", description = "Accounts Controller")
 @RequestMapping("/accounts")
 public class AccountsController {
