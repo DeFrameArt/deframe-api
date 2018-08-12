@@ -25,6 +25,14 @@ public class BotController {
 
 	public static String API_AI_TOKEN = "ce43ad2bcd2e4be294f87b30460e50f7";
 	public static String ASK_PRICE = "What is the price to visit the (ICA, MFA, Isabella) museum?";
+	private AIConfiguration configuration;
+	private AIDataService dataService;
+	
+	BotController(){
+		configuration = new AIConfiguration(API_AI_TOKEN);
+		dataService = new AIDataService(configuration);
+		
+	}
 	
 	/**
 	 * gets museum object
@@ -45,6 +53,7 @@ public class BotController {
 		
 		return museum;
 	}
+
 	/**
 	 * Invokes BOT.
 	 * @param textinput
@@ -53,28 +62,27 @@ public class BotController {
 	@RequestMapping(value = "/{textinput}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
 	public BotResponse askBot(@PathVariable("textinput") String textinput) {
-		AIConfiguration configuration = new AIConfiguration(API_AI_TOKEN);
-		AIDataService dataService = new AIDataService(configuration);
 		BotResponse botresponse = new BotResponse();
 		HashMap params = new HashMap();
 
 		try {
 			AIRequest request = new AIRequest(textinput);
-
 			AIResponse aiResponse = dataService.request(request);
 
 			if (aiResponse.getStatus().getCode() == 200) {
+				botresponse.setSpeech(aiResponse.getResult().getFulfillment().getSpeech());
+				// TODO: MVP +
+				//String intentName = "";
+				//String aiResponseText = "";
+				//String input = "";
+				
+				//if (aiResponse.getResult() != null && aiResponse.getResult().getMetadata() != null &&
+					//aiResponse.getResult().getMetadata().getIntentName() != null)
+					//intentName = aiResponse.getResult().getMetadata().getIntentName();
 
-				String intentName = "";
-				String aiResponseText = "";
-				String input = "";
-				if (aiResponse.getResult() != null && aiResponse.getResult().getMetadata() != null &&
-						aiResponse.getResult().getMetadata().getIntentName() != null)
-					intentName = aiResponse.getResult().getMetadata().getIntentName();
+				//Museum museum = null;
 
-				Museum museum = null;
-
-				switch (intentName) {
+				//switch (intentName) {
 				/*TODO in MVP Plus
 				case "GetMuseumLocation":
 					museum = getMuseum(params, aiResponse, input, museum);
@@ -93,11 +101,10 @@ public class BotController {
 					botresponse.setSpeech(museum.getTimingDetails());
 					break;
 					*/
-				default:
-					botresponse.setSpeech(aiResponse.getResult().getFulfillment().getSpeech());
-					break;
-				}
-
+				//default:
+					//botresponse.setSpeech(aiResponse.getResult().getFulfillment().getSpeech());
+					//break;
+				//}
 			} else {
 				botresponse.setSpeech(aiResponse.getStatus().getErrorDetails());
 			}
