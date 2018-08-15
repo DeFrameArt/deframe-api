@@ -2,6 +2,9 @@ package com.deframe.api.controller;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +26,7 @@ import io.swagger.annotations.Api;
 @RequestMapping("/deframe-bot")
 public class BotController {
 
-	public static String API_AI_TOKEN = "ce43ad2bcd2e4be294f87b30460e50f7";
+	public static String API_AI_TOKEN = "2b4cf0614aed45d28422a28ceaa439e9";
 	public static String ASK_PRICE = "What is the price to visit the (ICA, MFA, Isabella) museum?";
 	private AIConfiguration configuration;
 	private AIDataService dataService;
@@ -31,7 +34,6 @@ public class BotController {
 	BotController(){
 		configuration = new AIConfiguration(API_AI_TOKEN);
 		dataService = new AIDataService(configuration);
-		
 	}
 	
 	/**
@@ -61,14 +63,39 @@ public class BotController {
 	 */
 	@RequestMapping(value = "/{textinput}", method = RequestMethod.GET, produces = "application/json")
 	@ResponseBody
-	public BotResponse askBot(@PathVariable("textinput") String textinput) {
+	public BotResponse askBot(@PathVariable("textinput") String textinput, HttpServletRequest req) {
 		BotResponse botresponse = new BotResponse();
+		////////TODO fix for the session management		
+		/*
 		HashMap params = new HashMap();
-
+		HttpSession session = req.getSession();
+		String sid = "";
+		String tsid = "";
+		*/
 		try {
+			
+			//configuration = new AIConfiguration(API_AI_TOKEN);
+			//dataService = new AIDataService(configuration);
+			
 			AIRequest request = new AIRequest(textinput);
-			AIResponse aiResponse = dataService.request(request);
-
+			
+			AIResponse aiResponse =  dataService.request(request);
+			////////TODO fix for the session management
+			/*
+			if(session.getAttribute("tsessid")!=null){
+				sid = (String) session.getAttribute("sessid");
+				tsid = (String) session.getAttribute("tsessid");
+			}
+			else{
+				session.setAttribute("sessid",req.getSession().getId());
+				session.setAttribute("tsessid",req.getSession().getId()+request.getSessionId());
+			}
+			
+			System.out.println(" iddd-- "+tsid + " " + (String) session.getAttribute("tsessid"));
+		
+			//System.out.println(req.getSession().getId() + " " +request.getSessionId());
+			 
+			 */
 			if (aiResponse.getStatus().getCode() == 200) {
 				botresponse.setSpeech(aiResponse.getResult().getFulfillment().getSpeech());
 				// TODO: MVP +
