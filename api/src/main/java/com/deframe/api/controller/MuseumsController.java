@@ -19,6 +19,8 @@ import com.deframe.api.dao.ConnectionDao;
 import com.deframe.api.gallery.FeaturedImages;
 import com.deframe.api.gallery.Gallery;
 import com.deframe.api.gallery.MuseumMap;
+import com.deframe.api.gallery.UpdateFeaturedImage;
+import com.deframe.api.gallery.UpdateGallery;
 import com.deframe.api.museums.Museum;
 
 import io.swagger.annotations.Api;
@@ -89,46 +91,135 @@ public class MuseumsController {
 
 	/**
 	 * Adds a new Museum
+	 * 
 	 * @param id
 	 * @param museum
 	 * @return
 	 */
-	@RequestMapping( method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public  HttpStatus addMusuem(@RequestBody Museum museum) {
+	public HttpStatus addMusuem(@RequestBody Museum museum) {
 		logger.info(this.getClass().getName() + ".addMusuem: Adding Museums.");
 		Connection connection = ConnectionDao.getConnection();
-		return  ConnectionDao.addMuseum(connection, museum)==0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+		return ConnectionDao.addMuseum(connection, museum) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
 	}
-	
+
 	/**
 	 * Updates a Museum
+	 * 
 	 * @param id
 	 * @param museum
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json")
 	@ResponseBody
-	public  HttpStatus updateMusuem(@PathVariable("id") int id,@RequestBody Museum museum) {
+	public HttpStatus updateMusuem(@PathVariable("id") int id, @RequestBody Museum museum) {
 		logger.info(this.getClass().getName() + ".updateMusuem: Getting the musuem map..");
 		Connection connection = ConnectionDao.getConnection();
-		return  ConnectionDao.updateMuseum(connection, museum)==0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+		return ConnectionDao.updateMuseum(connection, museum) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
 	}
-	
+
 	/**
 	 * Deletes a Museum
+	 * 
 	 * @param id
 	 * @param museum
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	@ResponseBody
-	public  HttpStatus deleteMusuem(@PathVariable("id") int id) {
+	public HttpStatus deleteMusuem(@PathVariable("id") int id) {
 		logger.info(this.getClass().getName() + ".deleteMusuem: Getting the musuem map..");
 		Connection connection = ConnectionDao.getConnection();
-		return  ConnectionDao.deleteMuseum(connection, id)==0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+		return ConnectionDao.deleteMuseum(connection, id) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+	}
+
+	/**
+	 * Adds a new gallery
+	 * 
+	 * @param museumid
+	 * @param gallery
+	 * @return HttpStatus
+	 */
+
+	@RequestMapping(value = "/{museumid}/gallery", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public HttpStatus addGallery(@PathVariable("museumid") int museumid, @RequestBody UpdateGallery gallery) {
+		logger.info(this.getClass().getName() + ".addGallery: Adding Gallery.");
+		Connection connection = ConnectionDao.getConnection();
+		return ConnectionDao.addGallery(connection, gallery)==0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+	}
+
+	/**
+	 * Updates a Gallery
+	 * 
+	 * @param museumid
+	 * @param id
+	 * @param gallery
+	 * @return
+	 */
+	@RequestMapping(value = "/{museumid}/gallery/{id}", method = RequestMethod.PUT, produces = "application/json")
+	@ResponseBody
+	public HttpStatus updateGallery(@PathVariable("museumid") int museumid, @PathVariable("id") int id,
+			@RequestBody UpdateGallery gallery) {
+		logger.info(this.getClass().getName() + ".updateGallery: Updating the gallery.");
+		Connection connection = ConnectionDao.getConnection();
+		return ConnectionDao.updateGallery(connection, gallery, museumid, id)==0 ?
+		HttpStatus.NOT_FOUND : HttpStatus.OK;
 	}
 	
+	/**
+	 * Deletes a Gallery painting
+	 * 
+	 * @param id
+	 * @param museum
+	 * @return
+	 */
+	@RequestMapping(value = "/{museumid}/gallery/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public HttpStatus deleteGallery(@PathVariable("museumid") int museumid, @PathVariable("id") int id) {
+		logger.info(this.getClass().getName() + ".deleteGallery: Delete gallery painiting.");
+		Connection connection = ConnectionDao.getConnection();
+		return ConnectionDao.deleteGallery(connection, museumid, id) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+	}
 	
+	/*
+	 * 2. PUT /museums/{id}/gallery 3. DELETE /museums/{id}/gallery
+	 * 
+	 * 4. POST /museums/{id}/gallery/{name}/painting 5. PUT
+	 * /museums/{id}/gallery/{name}/painting 6. DELETE
+	 * /museums/{id}/gallery/{name}/painting
+	 * 
+	 * 7. DELETE /users/{id}
+	 */
 
+	/**
+	 * Add featured images gallery images for the museum
+	 * 
+	 * @param museumid
+	 *       
+	 **/
+	@RequestMapping(value = "/{museumid}/featuredimages", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public HttpStatus addFeaturedImage(@PathVariable("museumid") int museumid, @RequestBody UpdateFeaturedImage fi) {
+		logger.info(this.getClass().getName() + ".addFeaturedImage: Getting the musuem gallery..");
+		Connection connection = ConnectionDao.getConnection();
+		return ConnectionDao.addFeaturedImage(connection, fi)==0 ?
+				HttpStatus.NOT_FOUND : HttpStatus.OK;
+		}
+
+	/**
+	 * Deletes a Gallery painting
+	 * 
+	 * @param id
+	 * @param museum
+	 * @return
+	 */
+	@RequestMapping(value = "/{museumid}/featuredimages/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	@ResponseBody
+	public HttpStatus deleteFeaturedImage(@PathVariable("museumid") int museumid, @PathVariable("id") int id) {
+		logger.info(this.getClass().getName() + ".deleteFeaturedPainting: Delete featured painiting.");
+		Connection connection = ConnectionDao.getConnection();
+		return ConnectionDao.deleteFeaturedImage(connection, museumid, id) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+	}
 }

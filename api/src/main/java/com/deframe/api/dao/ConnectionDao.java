@@ -12,6 +12,8 @@ import com.deframe.api.accounts.Account;
 import com.deframe.api.gallery.FeaturedImages;
 import com.deframe.api.gallery.Gallery;
 import com.deframe.api.gallery.MuseumMap;
+import com.deframe.api.gallery.UpdateFeaturedImage;
+import com.deframe.api.gallery.UpdateGallery;
 import com.deframe.api.museums.Museum;
 import com.deframe.api.user.*;
 import com.deframe.api.utils.PasswordHashing;
@@ -964,6 +966,175 @@ public class ConnectionDao {
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, id);
+			res = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return res;
+	}
+	
+	/**
+	 * Adds Gallery object
+	 * 
+	 * @param conn
+	 * @param museum
+	 * @return
+	 */
+	public static int addGallery(Connection conn, UpdateGallery gallery) {
+
+		String query = "INSERT INTO `Gallery` (`name`, `url`, `museum_id`, `feature_type`, `description`, `artist`, `year`)"
+				+ "    values (?,?,?,?,?,?,?)";
+		int res = 0;
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, gallery.getName());
+			pstmt.setString(2, gallery.getUrl());
+			pstmt.setInt(3, gallery.getMuseumId());
+			pstmt.setString(4, gallery.getFeaturetype());
+			pstmt.setString(5, gallery.getDescription());
+			pstmt.setString(6, gallery.getArtist());
+			pstmt.setString(7, gallery.getYear());
+
+			res = pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return res;
+	}
+	
+	/**
+	 * Updates Gallery object
+	 * 
+	 * @param conn
+	 * @param museum
+	 * @return
+	 */
+	public static int updateGallery(Connection conn, UpdateGallery gallery, int museumid, int id) {
+
+		String query = "Update Gallery set name=?, url=?, museum_id=?, feature_type=?, description=?, artist=?, year=?  where id = ?";
+		int res = 0;
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, gallery.getName());
+			pstmt.setString(2, gallery.getUrl());
+			pstmt.setInt(3, museumid);
+			pstmt.setString(4, gallery.getFeaturetype());
+			pstmt.setString(5, gallery.getDescription());
+			pstmt.setString(6, gallery.getArtist());
+			pstmt.setString(7, gallery.getYear());
+			pstmt.setInt(8, id);
+			res = pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return res;
+	}
+	
+	/**
+	 * Deletes a gallery painting
+	 * 
+	 * @param conn
+	 * @param id
+	 * @return
+	 */
+	public static int deleteGallery(Connection conn, int museumid, int id ) {
+
+		String query = "Delete from Gallery where museum_id = ? and id = ?";
+		int res = 0;
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, museumid);
+			pstmt.setInt(2, id);
+			res = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return res;
+	}
+	
+	/**
+	 * Adds FeaturedImage object
+	 * 
+	 * @param conn
+	 * @param museum
+	 * @return
+	 */
+	public static int addFeaturedImage(Connection conn, UpdateFeaturedImage fi) {
+
+		String query = "INSERT INTO `Featured_Images` (`name`, `url`, `museum_id`)"
+				+ "    values (?,?,?)";
+		int res = 0;
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, fi.getName());
+			pstmt.setString(2, fi.getUrl());
+			pstmt.setInt(3, fi.getMuseumId());
+			
+			res = pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return res;
+	}
+	
+	/**
+	 * Deletes a featured painting
+	 * 
+	 * @param conn
+	 * @param id
+	 * @return
+	 */
+	public static int deleteFeaturedImage(Connection conn, int museumid, int id ) {
+
+		String query = "Delete from Featured_Images where museum_id = ? and id = ?";
+		int res = 0;
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, museumid);
+			pstmt.setInt(2, id);
 			res = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
