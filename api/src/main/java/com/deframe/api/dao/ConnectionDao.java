@@ -15,6 +15,7 @@ import com.deframe.api.gallery.MuseumMap;
 import com.deframe.api.gallery.UpdateFeaturedImage;
 import com.deframe.api.gallery.UpdateGallery;
 import com.deframe.api.museums.Museum;
+import com.deframe.api.museums.MuseumByCity;
 import com.deframe.api.user.*;
 import com.deframe.api.utils.PasswordHashing;
 import com.deframe.api.utils.ProjectConstants;
@@ -230,10 +231,10 @@ public class ConnectionDao {
 			pstmt.setString(5, user.getRole());
 
 			res = pstmt.executeUpdate();
-			//Send Welcome Mail
-			if(res>0)
+			// Send Welcome Mail
+			if (res > 0)
 				new EmailUtility().sendWelcomeMail(user.getEmailAddress());
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -448,6 +449,28 @@ public class ConnectionDao {
 	 * @param city
 	 * @return
 	 */
+
+	public static List<String> getCities(Connection conn) {
+
+		String query = "Select distinct City from Museum";
+		ResultSet rs = null;
+
+		List<String> cities = new ArrayList<String>();
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(query);
+
+			rs = pstmt.executeQuery();
+			while (rs != null && rs.next()) {
+
+				cities.add(rs.getString(1));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return cities;
+	}
+
 	public static List<Museum> getMusuemByCity(Connection conn, String city) {
 
 		String query = "SELECT * from Museum where UPPER(city) like ?";
@@ -455,7 +478,7 @@ public class ConnectionDao {
 
 		List<Museum> museums = new ArrayList<Museum>();
 		try {
-			if(city != null && !city.equals("")){
+			if (city != null && !city.equals("")) {
 				PreparedStatement pstmt = conn.prepareStatement(query);
 
 				pstmt.setString(1, "%" + city.toUpperCase() + "%");
@@ -475,11 +498,36 @@ public class ConnectionDao {
 					museum.setBannerUrl(rs.getString("Banner_url"));
 					museum.setLogoUrl(rs.getString("Logo_url"));
 					museums.add(museum);
-				} 
+				}
 			}
-			
 
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return museums;
+	}
+
+	/**
+	 * Gets all the museums according to the cities
+	 * 
+	 * @param conn
+	 * @return
+	 */
+	public static List<MuseumByCity> getMusuemAndCity(Connection conn) {
+
+		List<String> cities = getCities(conn);
+		List<Museum> museums = null;
+		List<MuseumByCity> museumsforcities = new ArrayList<MuseumByCity>();
+		try {
+			for (String c : cities) {
+				museums = getMusuemByCity(conn, c);
+				MuseumByCity m = new MuseumByCity();
+				m.setCity(c);
+				m.setMuseums(museums);
+				museumsforcities.add(m);
+			}
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
@@ -490,9 +538,9 @@ public class ConnectionDao {
 				e.printStackTrace();
 			}
 		}
-		return museums;
+		return museumsforcities;
 	}
-	
+
 	/**
 	 * get Museums by zip
 	 * 
@@ -507,7 +555,7 @@ public class ConnectionDao {
 
 		List<Museum> museums = new ArrayList<Museum>();
 		try {
-			if(zip != null && !zip.equals("")){
+			if (zip != null && !zip.equals("")) {
 				PreparedStatement pstmt = conn.prepareStatement(query);
 
 				pstmt.setString(1, "%" + zip + "%");
@@ -527,9 +575,8 @@ public class ConnectionDao {
 					museum.setBannerUrl(rs.getString("Banner_url"));
 					museum.setLogoUrl(rs.getString("Logo_url"));
 					museums.add(museum);
-				} 
+				}
 			}
-			
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -545,8 +592,6 @@ public class ConnectionDao {
 		return museums;
 	}
 
-
-	
 	/**
 	 * gets the list of images for a museum
 	 * 
@@ -637,6 +682,7 @@ public class ConnectionDao {
 
 	/**
 	 * Gets Gallery by artist name
+	 * 
 	 * @param conn
 	 * @param artist
 	 * @return
@@ -648,11 +694,11 @@ public class ConnectionDao {
 
 		List<Gallery> gallery = new ArrayList<Gallery>();
 		try {
-			
+
 			PreparedStatement pstmt = conn.prepareStatement(query);
 
 			pstmt.setString(1, "%" + artist.toUpperCase() + "%");
-			
+
 			rs = pstmt.executeQuery();
 			while (rs != null && rs.next()) {
 				Gallery image = new Gallery();
@@ -680,9 +726,10 @@ public class ConnectionDao {
 		}
 		return gallery;
 	}
-	
+
 	/**
 	 * Gets gallery for the category
+	 * 
 	 * @param conn
 	 * @param category
 	 * @return
@@ -694,11 +741,11 @@ public class ConnectionDao {
 
 		List<Gallery> gallery = new ArrayList<Gallery>();
 		try {
-			
+
 			PreparedStatement pstmt = conn.prepareStatement(query);
 
 			pstmt.setString(1, "%" + category.toUpperCase() + "%");
-			
+
 			rs = pstmt.executeQuery();
 			while (rs != null && rs.next()) {
 				Gallery image = new Gallery();
@@ -726,8 +773,7 @@ public class ConnectionDao {
 		}
 		return gallery;
 	}
-	
-	
+
 	/**
 	 * gets the list of floor plans for a museum
 	 * 
@@ -980,7 +1026,7 @@ public class ConnectionDao {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Adds Gallery object
 	 * 
@@ -1018,7 +1064,7 @@ public class ConnectionDao {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Updates Gallery object
 	 * 
@@ -1055,7 +1101,7 @@ public class ConnectionDao {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Deletes a gallery painting
 	 * 
@@ -1063,7 +1109,7 @@ public class ConnectionDao {
 	 * @param id
 	 * @return
 	 */
-	public static int deleteGallery(Connection conn, int museumid, int id ) {
+	public static int deleteGallery(Connection conn, int museumid, int id) {
 
 		String query = "Delete from Gallery where museum_id = ? and id = ?";
 		int res = 0;
@@ -1085,7 +1131,7 @@ public class ConnectionDao {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Adds FeaturedImage object
 	 * 
@@ -1095,15 +1141,14 @@ public class ConnectionDao {
 	 */
 	public static int addFeaturedImage(Connection conn, UpdateFeaturedImage fi) {
 
-		String query = "INSERT INTO `Featured_Images` (`name`, `url`, `museum_id`)"
-				+ "    values (?,?,?)";
+		String query = "INSERT INTO `Featured_Images` (`name`, `url`, `museum_id`)" + "    values (?,?,?)";
 		int res = 0;
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, fi.getName());
 			pstmt.setString(2, fi.getUrl());
 			pstmt.setInt(3, fi.getMuseumId());
-			
+
 			res = pstmt.executeUpdate();
 
 		} catch (SQLException e) {
@@ -1119,7 +1164,7 @@ public class ConnectionDao {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Deletes a featured painting
 	 * 
@@ -1127,7 +1172,7 @@ public class ConnectionDao {
 	 * @param id
 	 * @return
 	 */
-	public static int deleteFeaturedImage(Connection conn, int museumid, int id ) {
+	public static int deleteFeaturedImage(Connection conn, int museumid, int id) {
 
 		String query = "Delete from Featured_Images where museum_id = ? and id = ?";
 		int res = 0;

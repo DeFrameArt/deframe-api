@@ -22,6 +22,7 @@ import com.deframe.api.gallery.MuseumMap;
 import com.deframe.api.gallery.UpdateFeaturedImage;
 import com.deframe.api.gallery.UpdateGallery;
 import com.deframe.api.museums.Museum;
+import com.deframe.api.museums.MuseumByCity;
 
 import io.swagger.annotations.Api;
 
@@ -147,7 +148,7 @@ public class MuseumsController {
 	public HttpStatus addGallery(@PathVariable("museumid") int museumid, @RequestBody UpdateGallery gallery) {
 		logger.info(this.getClass().getName() + ".addGallery: Adding Gallery.");
 		Connection connection = ConnectionDao.getConnection();
-		return ConnectionDao.addGallery(connection, gallery)==0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+		return ConnectionDao.addGallery(connection, gallery) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
 	}
 
 	/**
@@ -164,10 +165,10 @@ public class MuseumsController {
 			@RequestBody UpdateGallery gallery) {
 		logger.info(this.getClass().getName() + ".updateGallery: Updating the gallery.");
 		Connection connection = ConnectionDao.getConnection();
-		return ConnectionDao.updateGallery(connection, gallery, museumid, id)==0 ?
-		HttpStatus.NOT_FOUND : HttpStatus.OK;
+		return ConnectionDao.updateGallery(connection, gallery, museumid, id) == 0 ? HttpStatus.NOT_FOUND
+				: HttpStatus.OK;
 	}
-	
+
 	/**
 	 * Deletes a Gallery painting
 	 * 
@@ -182,7 +183,7 @@ public class MuseumsController {
 		Connection connection = ConnectionDao.getConnection();
 		return ConnectionDao.deleteGallery(connection, museumid, id) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
 	}
-	
+
 	/*
 	 * 2. PUT /museums/{id}/gallery 3. DELETE /museums/{id}/gallery
 	 * 
@@ -197,16 +198,15 @@ public class MuseumsController {
 	 * Add featured images gallery images for the museum
 	 * 
 	 * @param museumid
-	 *       
+	 * 
 	 **/
 	@RequestMapping(value = "/{museumid}/featuredimages", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public HttpStatus addFeaturedImage(@PathVariable("museumid") int museumid, @RequestBody UpdateFeaturedImage fi) {
 		logger.info(this.getClass().getName() + ".addFeaturedImage: Getting the musuem gallery..");
 		Connection connection = ConnectionDao.getConnection();
-		return ConnectionDao.addFeaturedImage(connection, fi)==0 ?
-				HttpStatus.NOT_FOUND : HttpStatus.OK;
-		}
+		return ConnectionDao.addFeaturedImage(connection, fi) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+	}
 
 	/**
 	 * Deletes a Gallery painting
@@ -222,4 +222,16 @@ public class MuseumsController {
 		Connection connection = ConnectionDao.getConnection();
 		return ConnectionDao.deleteFeaturedImage(connection, museumid, id) == 0 ? HttpStatus.NOT_FOUND : HttpStatus.OK;
 	}
+
+	/*
+	 * Gets all the Museums according to the city
+	 */
+	@RequestMapping(value = "/museumsbycity", method = RequestMethod.GET, produces = "application/json")
+	@ResponseBody
+	public List<MuseumByCity> getMuseumsByCity() {
+		logger.info(this.getClass().getName() + ".museumsbycity: Getting the musuem by city..");
+		Connection connection = ConnectionDao.getConnection();
+		return ConnectionDao.getMusuemAndCity(connection);
+	}
+
 }
